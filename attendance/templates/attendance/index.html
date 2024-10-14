@@ -1,0 +1,120 @@
+{% extends "attendance/base.html" %}
+
+{% block body %}
+<h3 class="m-4">All records</h3>
+    <div class="row">
+        <div class="col-12">
+        {% if attendances.exists %}
+        <div class="card bg-light ms-4 me-4 mb-4">
+            <div class="card-header">
+              <i class="fa-solid fa-plus fa-lg"></i> Member Records
+            </div>
+            <div class="card-body">
+              <p class="card-text">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Category</th>
+                            <th scope="col">Email address</th>
+                            <th scope="col">Meeting</th>
+                            <th scope="col">Remarks</th>
+                            <th scope="col">Date of meeting</th>
+                            <th scope="col">Attended</th>
+                            <th scope="col">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {% for attendance in attendances %}
+                            <tr>
+                                <td>{{ attendance.name }}</td>
+                                <td>{{ attendance.category }}</td>
+                                <td>{{ attendance.email_address|default:"None" }}</td>
+                                <td>{{ attendance.meeting }}</td>
+                                <td>{{ attendance.remarks|default:"None" }}</td>
+                                <td>{{ attendance.date_of_meeting }}</td>
+                                <td>{{ attendance.attended }}</td>
+                                <td>
+                                  <!-- View Attendance Modal Trigger -->
+                                  <button type="button" class="btn btn-success me-1" data-bs-toggle="modal" data-bs-target="#viewModal{{ attendance.id }}">
+                                    <i class="fa-solid fa-circle-info fa-lg"></i>
+                                  </button>
+
+                                  <!-- Edit Attendance Link -->
+                                  <a class="btn btn-warning me-1" href="{% url 'edit' attendance.attendance_number %}">
+                                    <i class="fa-solid fa-pen-to-square fa-lg"></i>
+                                  </a>
+
+                                  <!-- Delete Attendance Modal Trigger -->
+                                  <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ attendance.id }}">
+                                    <i class="fa-solid fa-trash-can fa-lg"></i>
+                                  </button>
+
+                                  <!-- Modal - View Attendance -->
+                                  <div class="modal fade" id="viewModal{{ attendance.id }}" tabindex="-1" aria-labelledby="viewModalLabel{{ attendance.id }}" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                      <div class="modal-content">
+                                        <div class="modal-header">
+                                          <h5 class="modal-title" id="viewModalLabel{{ attendance.id }}">
+                                            Attendance: {{ attendance.name }}
+                                          </h5>
+                                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                          <ul class="list-unstyled">
+                                            <li>Member: <strong>{{ attendance.name }}</strong></li>
+                                            <li>Category: <strong>{{ attendance.category }}</strong></li>
+                                            <li>Email: <strong>{{ attendance.email_address|default:"None" }}</strong></li>
+                                            <li>Meeting: <strong>{{ attendance.meeting }}</strong></li>
+                                            <li>Remarks: <strong>{{ attendance.remarks|default:"None" }}</strong></li>
+                                            <li>Date of Meeting: <strong>{{ attendance.date_of_meeting }}</strong></li>
+                                            <li>Attended: <strong>{{ attendance.attended }}</strong></li>
+                                          </ul>
+                                        </div>
+                                        <div class="modal-footer">
+                                          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <!-- Modal - Delete Attendance -->
+                                  <div class="modal fade" id="deleteModal{{ attendance.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ attendance.id }}" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                      <div class="modal-content">
+                                        <div class="modal-header">
+                                          <h5 class="modal-title" id="deleteModalLabel{{ attendance.id }}">
+                                            Delete Attendance: {{ attendance.name }}
+                                          </h5>
+                                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                          <p>Are you sure you want to delete this record?</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                          <form action="{% url 'delete' attendance.id %}" method="POST">
+                                            {% csrf_token %}
+                                            <input type="submit" class="btn btn-primary" value="Delete">
+                                          </form>
+                                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+              </p>
+            </div>
+        </div>
+      </div>
+        {% else %}
+          <h5 class="alert alert-primary ms-4 me-4">No Records</h5>
+        {% endif %}
+        </div>
+    </div>
+{% endblock %}
